@@ -1,4 +1,5 @@
 // Copyright 2021 Artem Artemov <theartemka6@mail.ru>
+//
 
 #ifndef INCLUDE_SHAREDPTRTESTS_HPP_
 #define INCLUDE_SHAREDPTRTESTS_HPP_
