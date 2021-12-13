@@ -15,100 +15,100 @@ template <typename T>
 class SharedPtr {
  public:
   SharedPtr() {
-    this->ptr = nullptr;
-    this->counter = new std::atomic_uint;
-    *this->counter = 0;
+    ptr = nullptr;
+    counter = new std::atomic_uint;
+    *counter = 0;
   }
 
   explicit SharedPtr(T* pointer) {
-    this->counter = new std::atomic_uint;
-    this->ptr = pointer;
-    *this->counter = 1;
+    counter = new std::atomic_uint;
+    ptr = pointer;
+    *counter = 1;
   }
 
   SharedPtr(const SharedPtr& r) {
-    this->ptr = r.ptr;
-    this->counter = r.counter;
-    (*this->counter)++;
+    ptr = r.ptr;
+    counter = r.counter;
+    (*counter)++;
   }
 
   SharedPtr(SharedPtr&& r) {
-    this->ptr = std::move(r.ptr);
-    this->counter = std::move(r.counter);
+    ptr = std::move(r.ptr);
+    counter = std::move(r.counter);
   }
 
   ~SharedPtr() {
-    if ((*this->counter) < 2) {
-      delete this->counter;
+    if ((*counter) < 2) {
+      delete counter;
     } else {
-      this->ptr = nullptr;
-      (*this->counter)--;
+      ptr = nullptr;
+      (*counter)--;
     }
   }
 
   auto operator=(const SharedPtr& r) -> SharedPtr& {
-    if ((*this->counter) > 1) {
-      (*this->counter)--;
+    if ((*counter) > 1) {
+      (*counter)--;
     }
-    this->ptr = r.ptr;
-    this->counter = r.counter;
-    (*this->counter)++;
+    ptr = r.ptr;
+    counter = r.counter;
+    (*counter)++;
     return *this;
   }
 
   auto operator=(SharedPtr&& r) -> SharedPtr& {
-    if ((*this->counter) > 1) {
-      (*this->counter)--;
+    if ((*counter) > 1) {
+      (*counter)--;
     }
-    this->ptr = std::move(r.ptr);
-    this->counter = std::move(r.counter);
+    ptr = std::move(r.ptr);
+    counter = std::move(r.counter);
     return *this;
   }
 
-  operator bool() const { return (this->ptr != nullptr); }
+  operator bool() const { return (ptr != nullptr); }
 
-  auto operator*() const -> T& { return (*this->ptr); }
+  auto operator*() const -> T& { return (*ptr); }
 
-  auto operator->() const -> T* { return this->ptr; }
+  auto operator->() const -> T* { return ptr; }
 
-  auto get() -> T* { return this->ptr; }
+  auto get() -> T* { return ptr; }
 
   void reset() {
-    if (*this->counter > 1) {
-      (*this->counter)--;
+    if (*counter > 1) {
+      (*counter)--;
     } else {
-      delete this->counter;
+      delete counter;
     }
-    this->ptr = nullptr;
-    this->counter = new std::atomic_uint;
-    *this->counter = 0;
+    ptr = nullptr;
+    counter = new std::atomic_uint;
+    *counter = 0;
   }
 
   void reset(T* pointer) {
-    if (*this->counter > 1) {
-      (*this->counter)--;
+    if (*counter > 1) {
+      (*counter)--;
     } else {
-      delete this->counter;
+      delete counter;
     }
-    this->ptr = pointer;
-    this->counter = new std::atomic_uint;
-    *this->counter = 1;
+    ptr = pointer;
+    counter = new std::atomic_uint;
+    *counter = 1;
   }
 
   void swap(SharedPtr& r) {
-    T* temp1 = this->ptr;
-    std::atomic_uint* temp2 = this->counter;
-    this->ptr = r.ptr;
-    this->counter = r.counter;
+    T* temp1 = ptr;
+    std::atomic_uint* temp2 = counter;
+    ptr = r.ptr;
+    counter = r.counter;
     r.ptr = temp1;
     r.counter = temp2;
   }
 
   auto use_count() const -> size_t {
-    if (this->counter == nullptr) {
+    if (counter == nullptr) {
       return 0;
     } else {
-      return *this->counter;
+      return *counter;
     }
   }
 
